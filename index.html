@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ug" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ئامبار ماللىرىنى تېز تىزىملاش سىستېمىسى</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Arial, 'Microsoft Uighur', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* يۇقىرىقى ماۋزۇ قىسمى */
+    header {
+      background: linear-gradient(135deg, #0284c7, #0f766e);
+      color: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+    header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+    header p { font-size: 0.95rem; opacity: 0.9; }
+
+    /* ئومۇمىي ستاتىستىكا كارتىلىرى */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .stat-card .label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px; }
+    .stat-card .value { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+
+    /* كىرگۈزۈش رايونى */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .form-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      color: var(--primary-hover);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .form-group input, .form-group select {
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+    }
+
+    /* ئاپتوماتىك پۇل چىقىدىغان ئورۇن */
+    .auto-total-input {
+      background: #f1f5f9 !important;
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.05rem !important;
+      border-color: #cbd5e1 !important;
+      cursor: not-allowed;
+    }
+
+    .btn-submit {
+      margin-top: 16px;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    /* تىزىملىك كۆرسىتىش رايونى */
+    .list-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-secondary {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .btn-excel {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    th {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* سۈپەت بەلگىسى */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .badge-new { background: #dcfce7; color: #15803d; }
+    .badge-used { background: #fef3c7; color: #b45309; }
+    .badge-damaged { background: #fee2e2; color: #b91c1c; }
+
+    .btn-delete {
+      color: var(--danger);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* بېسىپ چىقىرىش تەڭشىكى */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .form-card, .btn-submit, .action-btns, .btn-delete { display: none !important; }
+      header { background: none; color: #000; box-shadow: none; border-bottom: 2px solid #000; }
+      .stat-card { border: 1px solid #ccc; }
+      table { border: 1px solid #ccc; }
+      th, td { border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header>
+      <h1>ئامبار ماللىرىنى تېز تىزىملاش سىستېمىسى</h1>
+      <p>ماللارنىڭ سانى ۋە بىرلىك باھاسىنى كىرگۈزسىڭىز، جەمئىي سومما ئۆزلۈكىدىن ھېسابلىنىدۇ</p>
+    </header>
+
+    <!-- ئۈستۈنكى ئومۇمىي كۆرسەتكۈچلەر -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">تىزىملانغان تۈر سانى</div>
+        <div class="value" id="statTotalItems">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">ئامباردىكى جەمئىي مال سانى</div>
+        <div class="value" id="statTotalQty">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">ئامبارنىڭ ئومۇمىي قىممىتى</div>
+        <div class="value" id="statTotalAmount">0 $</div>
+      </div>
+    </div>
+
+    <!-- كىرگۈزۈش كۆزنىكى -->
+    <div class="form-card">
+      <h2>مال كىرگۈزۈش بۆلىكى</h2>
+      <form id="inventoryForm">
+        <div class="inputs-grid">
+          
+          <div class="form-group">
+            <label for="itemName">مەھسۇلات نامى:</label>
+            <input type="text" id="itemName" placeholder="مەسىلەن: پىرىنتېر" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label for="itemQty">سانى:</label>
+            <input type="number" id="itemQty" min="1" placeholder="مەسىلەن: 50" required>
+          </div>
+
+          <div class="form-group">
+            <label for="itemPrice">بىر دانىسىنىڭ باھاسى ($):</label>
+            <input type="number" step="0.01" id="itemPrice" min="0" placeholder="مەسىلەن: 120" required>
+          </div>
+
+          <div class="form-group">
+            <label for="itemTotal">جەمئىي سومما (ئاپتوماتىك):</label>
+            <input type="text" id="itemTotal" class="auto-total-input" value="0.00 $" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="itemQuality">سۈپىتى:</label>
+            <select id="itemQuality">
+              <option value="يېڭى">يېڭى (ئېچىلمىغان)</option>
+              <option value="ياخشى">ياخشى (ئىشلىتىلگەن)</option>
+              <option value="نۇقسانلىق">نۇقسانلىق / بۇزۇلغان</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="itemLocation">ئورنى / تەكچە:</label>
+            <input type="text" id="itemLocation" placeholder="مەسىلەن: A-01 تەكچە">
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn-submit">+ ئامبار تىزىملىكىگە قوشۇش</button>
+      </form>
+    </div>
+
+    <!-- تىزىملىك جەدۋىلى -->
+    <div class="list-card">
+      <div class="list-header">
+        <h2>تىزىملانغان ماللار تىزىمى</h2>
+        <div class="action-btns">
+          <button class="btn-secondary btn-excel" onclick="exportToExcel()">Excel (CSV) غا چۈشۈرۈش</button>
+          <button class="btn-secondary" onclick="window.print()">بېسىپ چىقىرىش / PDF</button>
+          <button class="btn-secondary" style="color:red;" onclick="clearAllData()">ھەممىنى تازىلاش</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>تەرتىپى</th>
+              <th>مەھسۇلات نامى</th>
+              <th>سۈپىتى</th>
+              <th>سانى</th>
+              <th>بىر دانىسى</th>
+              <th>جەمئىي سوممىسى</th>
+              <th>ئورنى</th>
+              <th>مەشغۇلات</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <!-- سانلىق مەلۇماتلار بۇ يەرگە ئاپتوماتىك كىرىدۇ -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. يەرلىك ساقلىغۇچتىن ئوقۇش (ئەگەر ئىلگىرى باغلانغان ئۇچۇر بولسا)
+    let inventory = JSON.parse(localStorage.getItem('my_inventory_data')) || [];
+
+    const qtyInput = document.getElementById('itemQty');
+    const priceInput = document.getElementById('itemPrice');
+    const totalInput = document.getElementById('itemTotal');
+    const form = document.getElementById('inventoryForm');
+
+    // 2. تەلەپ قىلىنغان ئەڭ مۇھىم ئىقتىدار: جەمئىي سوممىنى دەرھال ئاپتوماتىك ھېسابلاش
+    function calculateAutoTotal() {
+      const qty = parseFloat(qtyInput.value) || 0;
+      const price = parseFloat(priceInput.value) || 0;
+      const total = qty * price;
+      totalInput.value = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+    }
+
+    // سانى ياكى باھاسىنى كىرگۈزۈش بىلەن تەڭلا ئاپتوماتىك ھېسابلايدۇ
+    qtyInput.addEventListener('input', calculateAutoTotal);
+    priceInput.addEventListener('input', calculateAutoTotal);
+
+    // 3. يېڭى مال قوشۇش
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('itemName').value.trim();
+      const qty = parseFloat(qtyInput.value);
+      const price = parseFloat(priceInput.value);
+      const quality = document.getElementById('itemQuality').value;
+      const location = document.getElementById('itemLocation').value.trim() || 'كۆرسىتىلمىگەن';
+      const total = qty * price;
+
+      const item = {
+        id: Date.now(),
+        name,
+        qty,
+        price,
+        total,
+        quality,
+        location
+      };
+
+      inventory.push(item);
+      saveAndRender();
+
+      // كىرگۈزۈش رامكىلىرىنى ئەسلىگە كەلتۈرۈش
+      form.reset();
+      totalInput.value = '0.00 $';
+      document.getElementById('itemName').focus();
+    });
+
+    // 4. تىزىملىكتىن ئۆچۈرۈش
+    function deleteItem(id) {
+      if (confirm('بۇ مەھسۇلاتنى تىزىملىكتىن راستىنلا ئۆچۈرەمسىز؟')) {
+        inventory = inventory.filter(item => item.id !== id);
+        saveAndRender();
+      }
+    }
+
+    // 5. ھەممىنى پاكىز تازىلاش
+    function clearAllData() {
+      if (confirm('پۈتۈن ئامبار تىزىمىنى نۆللۈك ھالەتكە كەلتۈرەمسىز؟')) {
+        inventory = [];
+        saveAndRender();
+      }
+    }
+
+    // 6. يەرلىككە ساقلاش ۋە ئېكراننى يېڭىلاش
+    function saveAndRender() {
+      localStorage.setItem('my_inventory_data', JSON.stringify(inventory));
+      renderTable();
+      updateStats();
+    }
+
+    // 7. جەدۋەلگە سىزىپ چىقىرىش
+    function renderTable() {
+      const tbody = document.getElementById('inventoryTableBody');
+      tbody.innerHTML = '';
+
+      if (inventory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:30px;">تېخى ھېچقانداق مال تىزىملانمىدى. يۇقىرىدىن قوشۇڭ.</td></tr>`;
+        return;
+      }
+
+      inventory.forEach((item, index) => {
+        let badgeClass = 'badge-new';
+        if (item.quality === 'ياخشى') badgeClass = 'badge-used';
+        if (item.quality === 'نۇقسانلىق') badgeClass = 'badge-damaged';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td><strong>${item.name}</strong></td>
+          <td><span class="badge ${badgeClass}">${item.quality}</span></td>
+          <td>${item.qty}</td>
+          <td>${item.price.toFixed(2)} $</td>
+          <td style="color:var(--success); font-weight:bold;">${item.total.toFixed(2)} $</td>
+          <td>${item.location}</td>
+          <td><button class="btn-delete" onclick="deleteItem(${item.id})">ئۆچۈرۈش</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // 8. ئومۇمىي مىقدار ۋە باھالارنى ھېسابلاپ يېڭىلاش
+    function updateStats() {
+      const totalItems = inventory.length;
+      const totalQty = inventory.reduce((sum, item) => sum + item.qty, 0);
+      const totalAmount = inventory.reduce((sum, item) => sum + item.total, 0);
+
+      document.getElementById('statTotalItems').innerText = totalItems;
+      document.getElementById('statTotalQty').innerText = totalQty;
+      document.getElementById('statTotalAmount').innerText = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' $';
+    }
+
+    // 9. Excel (CSV) ھۆججىتىگە ئايلاندۇرۇپ چۈشۈرۈش
+    function exportToExcel() {
+      if (inventory.length === 0) {
+        alert('تىزىملىكتە مال يوق!');
+        return;
+      }
+
+      let csvContent = '\uFEFF'; // ئۇيغۇرچە خەتلەر تۈز چىقىشى ئۈچۈن UTF-8 بەلگىسى
+      csvContent += "تەرتىپى,مەھسۇلات نامى,سۈپىتى,سانى,بىرلىك باھاسى ($),جەمئىي سوممىسى ($),ئورنى\n";
+
+      inventory.forEach((item, idx) => {
+        csvContent += `"${idx + 1}","${item.name}","${item.quality}","${item.qty}","${item.price}","${item.total}","${item.location}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `ئامبار_دوكلاتى_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // تۇنجى قېتىم ئېچىلغاندا كۆرسىتىش
+    renderTable();
+    updateStats();
+  </script>
+</body>
+</html>
